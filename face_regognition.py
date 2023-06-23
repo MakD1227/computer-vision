@@ -1,23 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
-
-# In[231]:
-
-
 get_ipython().run_line_magic('matplotlib', 'inline')
- 
 import matplotlib.pyplot as plt
 import numpy as np
 import os
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
-
 # # Preparing the data set
-
-# In[232]:
-
-
 import joblib
 from skimage.io import imread
 from skimage.transform import resize
@@ -49,8 +39,7 @@ def resize_all(src, pklname, include, width=150, height=None):
      
     pklname = f"{pklname}_{width}x{height}px.pkl"
     
- 
-    # read all images in PATH, resize and write to DESTINATION_PATH
+     # read all images in PATH, resize and write to DESTINATION_PATH
     for subdir in os.listdir(src):
         if subdir in include:
             print(subdir)
@@ -65,49 +54,25 @@ def resize_all(src, pklname, include, width=150, height=None):
                     data['data'].append(im)
  
         joblib.dump(data, pklname)
-    
-
-
-# In[233]:
-
 
 # modify to fit your system
 data_path = fr'face'
 os.listdir(data_path)
-
-
-# In[234]:
-
-
 base_name = 'face'
 width = 150
- 
 include = {'owner', 'unkown'}
- 
 resize_all(src=data_path, pklname=base_name, width=width, include=include)
 
-
-# In[235]:
-
-
 from collections import Counter
- 
 data = joblib.load(f'{base_name}_{width}x{width}px.pkl')
- 
 print('number of samples: ', len(data['data']))
 print('keys: ', list(data.keys()))
 print('description: ', data['description'])
 print('image shape: ', data['data'][0].shape)
 print('labels:', np.unique(data['label']))
- 
 Counter(data['label'])
 
-
 # # The images below show an example of each faces included.
-
-# In[236]:
-
-
 # use np.unique to get all unique values in the list of labels
 labels = np.unique(data['label'])
  
@@ -125,23 +90,13 @@ for ax, label in zip(axes, labels):
     ax.axis('off')
     ax.set_title(label)
 
-
 # # By convention, we name the input data X and result (labels) y
-
-# In[237]:
-
-
 X = np.array(data['data'])
 y = np.array(data['label'])
 
-
 # # split our data into a test set and a training set 80%  for train  and 20% for test 
 
-# In[238]:
-
-
 from sklearn.model_selection import train_test_split
- 
 X_train, X_test, y_train, y_test = train_test_split(
     X, 
     y, 
@@ -150,12 +105,7 @@ X_train, X_test, y_train, y_test = train_test_split(
     random_state=42,
 )
 
-
 # # To verify that the distribution of photos in the training and test set is simila
-
-# In[239]:
-
-
 def plot_bar(y, loc='left', relative=True):
     width = 0.35
     if loc == 'left':
@@ -192,19 +142,12 @@ plt.legend([
     'test ({0} photos)'.format(len(y_test))
 ]);
 
-
 # # pre processing
-
-# In[240]:
-
-
 from skimage.feature import hog
 from skimage.io import imread
 from skimage.transform import rescale
  
 wes = imread('face/owner/mrw.jpg', as_gray=True)
-# https://en.wikipedia.org/wiki/German_Shepherd#/media/File:Kim_at_14_weeks.jpg
- 
 # scale down the image to one third
 wes = rescale(wes, 1/3, mode='reflect')
 # calculate the hog and return a visual representation.
@@ -226,23 +169,12 @@ ax[0].set_title('wes')
 ax[1].imshow(dog_hog_img, cmap='gray')
 ax[1].set_title('wes')
 plt.show()
-
-
-# In[241]:
-
-
 print('number of pixels: ', wes.shape[0] * wes.shape[1])
 print('number of hog features: ', wes_hog_img.shape[0])
 
-
 # # Transformers
-
-# In[242]:
-
-
 #Below, we define the RGB2GrayTransformer and HOGTransformer.
 from sklearn.base import BaseEstimator, TransformerMixin
- 
 class RGB2GrayTransformer(BaseEstimator, TransformerMixin):
     """
     Convert an array of RGB images to grayscale
@@ -258,7 +190,6 @@ class RGB2GrayTransformer(BaseEstimator, TransformerMixin):
     def transform(self, X, y=None):
         """perform the transformation and return an array"""
         return np.array([skimage.color.rgb2gray(img) for img in X])
-     
  
 class HogTransformer(BaseEstimator, TransformerMixin):
     """
@@ -292,10 +223,6 @@ class HogTransformer(BaseEstimator, TransformerMixin):
         except:
             return np.array([local_hog(img) for img in X])
 
-
-# In[243]:
-
-
 #all set to preprocess our RGB images to scaled HOG features.
 from sklearn.linear_model import SGDClassifier
 from sklearn.model_selection import cross_val_predict
@@ -322,12 +249,7 @@ X_test_prepared = scalify.fit_transform(X_test_hog)
 print('train: ',X_train_prepared.shape)
 print('X_test: ',X_test_prepared.shape)
 
-
 # # Training and #Testing  
-
-# In[244]:
-
-
 #Training
 sgd_clf = SGDClassifier(random_state=42, max_iter=1000, tol=1e-3)
 sgd_clf.fit(X_train_prepared, y_train)
@@ -335,18 +257,7 @@ sgd_clf.fit(X_train_prepared, y_train)
 y_pred = sgd_clf.predict(X_test_prepared)
 print('Percentage correct: ', 100*np.sum(y_pred == y_test)/len(y_test))
 
-
-# In[245]:
-
-
 # save the model to disk
 import pickle
 filename = 'faceregonition.sav'
 pickle.dump(sgd_clf, open(filename, 'wb'))
-
-
-# In[ ]:
-
-
-
-
