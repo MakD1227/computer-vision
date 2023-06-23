@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[200]:
-
-
 get_ipython().run_line_magic('matplotlib', 'inline')
  
 import matplotlib.pyplot as plt
@@ -65,8 +62,7 @@ def resize_all(src, pklname, include, width=150, height=None):
                     data['data'].append(im)
  
         joblib.dump(data, pklname)
-
-    
+   
 #Below, we define the RGB2GrayTransformer and HOGTransformer.
 
 class RGB2GrayTransformer(BaseEstimator, TransformerMixin):
@@ -84,15 +80,13 @@ class RGB2GrayTransformer(BaseEstimator, TransformerMixin):
     def transform(self, X, y=None):
         """perform the transformation and return an array"""
         return np.array([skimage.color.rgb2gray(img) for img in X])
-     
- 
+  
 class HogTransformer(BaseEstimator, TransformerMixin):
     """
     Expects an array of 2d arrays (1 channel images)
     Calculates hog features for each img
     """
- 
-    def __init__(self, y=None, orientations=9,
+     def __init__(self, y=None, orientations=9,
                  pixels_per_cell=(8, 8),
                  cells_per_block=(3, 3), block_norm='L2-Hys'):
         self.y = y
@@ -117,7 +111,6 @@ class HogTransformer(BaseEstimator, TransformerMixin):
             return np.array([local_hog(img) for img in X])
         except:
             return np.array([local_hog(img) for img in X])
-
 
 #all set to preprocess our RGB images to scaled HOG features.
 def run(include='A'):
@@ -149,12 +142,6 @@ def run(include='A'):
     return x[0]
     #print("This habitant is : ",)
   
-        
-
-
-# In[208]:
-
-
 #importing neccessary libraries
 from tkinter import Tk,Label,Button,Text
 import pickle
@@ -175,8 +162,6 @@ def  here(event):
     text2.insert('1.0','The door is '+response)
     text2['state']='disabled'
     text2.grid(row=3,column=1)
-    
-
 root=Tk()
 #root.iconbitmap('security.ico')
 root.title("door unlock using  AI secuirty camera")
@@ -198,17 +183,9 @@ go_button.grid(row=0,column=2,)
 #add nothing to do label to have space between the first row and the second row
 Label(root,text="",bg=background).grid(row=1,column=0)
 
-
 #adding  "Output label"
 Label(root,text="Output",bg="lightblue",padx=10,pady=5).grid(row=2,column=0)
 
-
 root.geometry("800x300")
 root.mainloop()
-
-
-# In[ ]:
-
-
-
 
